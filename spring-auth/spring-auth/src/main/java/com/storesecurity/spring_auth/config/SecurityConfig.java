@@ -26,6 +26,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -35,6 +37,8 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 	@Configuration
@@ -98,20 +102,29 @@ import java.util.UUID;
 
 		@Bean
 		public RegisteredClientRepository registeredClientRepository() {
-			RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-					.clientId("oidc-client")
-					.clientSecret("{noop}secret")
+			RegisteredClient createClient = RegisteredClient.withId(UUID.randomUUID().toString())
+					.clientId("store-security")
+					.clientSecret("{noop}VxubZgAXyyTq9lGjj3qGvWNsHtE4SqTq")
+					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+					.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+					.scopes(scope-> scope.addAll(List.of(OidcScopes.OPENID,"ADMIN")))
+					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
+							.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED).build())
+					.build();
+			RegisteredClient pkceClient = RegisteredClient.withId(UUID.randomUUID().toString())
+					.clientId("store-security-pkce")
 					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-					.redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
-					.postLogoutRedirectUri("http://127.0.0.1:8080/")
-					.scope(OidcScopes.OPENID)
-					.scope(OidcScopes.PROFILE)
-					.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-					.build();
+					.scope(OidcScopes.OPENID).scope(OidcScopes.EMAIL)
+					.clientSettings(ClientSettings.builder().requireProofKey(true).build())
+					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
+							.refreshTokenTimeToLive(Duration.ofMinutes(8)).reuseRefreshTokens(false).accessTokenFormat(
+									OAuth2TokenFormat.SELF_CONTAINED
+							).build()).build();
 
-			return new InMemoryRegisteredClientRepository(oidcClient);
+
+			return new InMemoryRegisteredClientRepository(createClient,pkceClient);
 		}
 
 		@Bean
