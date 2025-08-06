@@ -105,12 +105,13 @@ import java.util.UUID;
 			RegisteredClient createClient = RegisteredClient.withId(UUID.randomUUID().toString())
 					.clientId("store-security")
 					.clientSecret("{noop}VxubZgAXyyTq9lGjj3qGvWNsHtE4SqTq")
-					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
 					.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 					.scopes(scope-> scope.addAll(List.of(OidcScopes.OPENID,"ADMIN")))
 					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
 							.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED).build())
 					.build();
+
 			RegisteredClient pkceClient = RegisteredClient.withId(UUID.randomUUID().toString())
 					.clientId("store-security-pkce")
 					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
