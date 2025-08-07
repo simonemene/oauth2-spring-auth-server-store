@@ -1,14 +1,18 @@
 package com.store.security.store_security.config;
 
 import com.store.security.store_security.constants.RoleConstants;
+import com.store.security.store_security.dto.RoleDto;
 import com.store.security.store_security.dto.StockDto;
+import com.store.security.store_security.dto.UserDto;
 import com.store.security.store_security.entity.AuthoritiesEntity;
 import com.store.security.store_security.entity.StockEntity;
 import com.store.security.store_security.entity.UserEntity;
 import com.store.security.store_security.repository.AuthoritiesRepository;
 import com.store.security.store_security.repository.StockRepository;
 import com.store.security.store_security.repository.UserRepository;
+import com.store.security.store_security.service.IRegistrationService;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.Keycloak;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -27,6 +31,8 @@ public class DataConfigInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+
         AuthoritiesEntity authorities = new AuthoritiesEntity();
         authorities.setAuthority(RoleConstants.ADMIN.getRole());
         authorities = authoritiesRepository.save(authorities);

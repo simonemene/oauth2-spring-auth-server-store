@@ -6,6 +6,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 @Sql(scripts = "/sql/delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class StoreSecurityApplicationTests {
 

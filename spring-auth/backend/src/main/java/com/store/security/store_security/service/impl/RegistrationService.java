@@ -2,16 +2,26 @@ package com.store.security.store_security.service.impl;
 
 import com.store.security.store_security.annotation.LogExecutionTime;
 import com.store.security.store_security.constants.RoleConstants;
+import com.store.security.store_security.dto.RoleDto;
 import com.store.security.store_security.dto.UserDto;
 import com.store.security.store_security.entity.AuthoritiesEntity;
 import com.store.security.store_security.entity.UserEntity;
 import com.store.security.store_security.exceptions.UserException;
 import com.store.security.store_security.mapper.UserMapper;
+import com.store.security.store_security.mapper.keycloack.UserKeycloackMapper;
+import com.store.security.store_security.properties.KeycloackProperties;
 import com.store.security.store_security.repository.AuthoritiesRepository;
 import com.store.security.store_security.repository.UserRepository;
 import com.store.security.store_security.service.IRegistrationService;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RoleResource;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -63,4 +73,5 @@ public class RegistrationService implements IRegistrationService {
 
         return userMapper.toDto(userRegister);
     }
+
 }

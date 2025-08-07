@@ -1,7 +1,7 @@
 package com.store.security.store_security.security;
 
+import com.store.security.store_security.converter.KeycloakJwtConverter;
 import com.store.security.store_security.exceptionhandle.CustomAccessDeniedHandler;
-import com.store.security.store_security.filter.JwtValidatorFilter;
 import com.store.security.store_security.properties.StoreProperties;
 import com.store.security.store_security.provider.UserProviderDetailsManager;
 import com.store.security.store_security.service.UserSecurityDetailService;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
@@ -20,10 +19,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -44,6 +42,7 @@ public class ConfigSecurityDev {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationConverter converter = new KeycloakJwtConverter();
 
 
         http.csrf(AbstractHttpConfigurer::disable);
@@ -73,8 +72,6 @@ public class ConfigSecurityDev {
                                        "/swagger-ui/index.html",
                                         "/api/auth/logout"
                                        ).permitAll());
-        //set custom filter
-        http.addFilterBefore(new JwtValidatorFilter(storeProperties),BasicAuthenticationFilter.class);
         http.cors(cors->cors.configurationSource(
                 new CorsConfigurationSource() {
                     @Override
@@ -92,14 +89,10 @@ public class ConfigSecurityDev {
                 }
         ));
 
-        http.logout(logout->
-                logout.deleteCookies("JSESSIONID","CSRF-TOKEN")
-                        .logoutUrl("/api/auth/logout")
-                        .invalidateHttpSession(true).permitAll()
-                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-        );
+        http.oauth2ResourceServer(resource->resource.jwt(
+                token->token.jwtAuthenticationConverter(converter)
+        ));
 
-        //authentication
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.exceptionHandling(exception->exception.accessDeniedHandler(new CustomAccessDeniedHandler()));
