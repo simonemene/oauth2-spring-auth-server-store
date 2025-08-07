@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -32,6 +33,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -61,7 +64,7 @@ import java.util.UUID;
 					.authorizeHttpRequests((authorize) ->
 							authorize
 									.anyRequest().authenticated()
-					)
+					).cors(cors->cors.configurationSource(corsConfigurationSource()))
 					// Redirect to the login page when not authenticated from the
 					// authorization endpoint
 					.exceptionHandling((exceptions) -> exceptions
@@ -82,6 +85,7 @@ import java.util.UUID;
 					.authorizeHttpRequests((authorize) -> authorize
 							.anyRequest().authenticated()
 					)
+					.cors(cors->cors.configurationSource(corsConfigurationSource()))
 					// Form login handles the redirect to the login page from the
 					// authorization server filter chain
 					.formLogin(Customizer.withDefaults());
@@ -119,7 +123,7 @@ import java.util.UUID;
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 					.scope(OidcScopes.OPENID).scope(OidcScopes.EMAIL)
 					.clientSettings(ClientSettings.builder().requireProofKey(true).build())
-					.redirectUri("https://oauth.pstmn.io/v1/callback")
+					.redirectUri("http://localhost:4200/welcome")
 					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
 							.refreshTokenTimeToLive(Duration.ofMinutes(8)).reuseRefreshTokens(false).accessTokenFormat(
 									OAuth2TokenFormat.SELF_CONTAINED
@@ -163,6 +167,24 @@ import java.util.UUID;
 		@Bean
 		public AuthorizationServerSettings authorizationServerSettings() {
 			return AuthorizationServerSettings.builder().build();
+		}
+
+		@Bean
+		public CorsConfigurationSource corsConfigurationSource() {
+			CorsConfiguration corsConfiguration = new CorsConfiguration();
+			corsConfiguration.addAllowedOrigin("http://localhost:4200");
+			corsConfiguration.setAllowCredentials(true);
+			corsConfiguration.setMaxAge(3600L);
+			corsConfiguration.addAllowedHeader("*");
+			corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH"));
+			corsConfiguration.addExposedHeader("Authorization");
+			return new CorsConfigurationSource() {
+				@Override
+				public CorsConfiguration getCorsConfiguration(
+						HttpServletRequest request) {
+					return corsConfiguration;
+				}
+			};
 		}
 
 	}

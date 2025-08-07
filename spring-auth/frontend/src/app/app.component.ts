@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/component/header/header.component';
 import { FooterComponent } from './shared/component/footer/footer.component';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-root',
@@ -17,4 +18,8 @@ export class AppComponent {
   unloadNotification(event: any) {
     navigator.sendBeacon('/logout'); 
   }
+
+
+
+
 }

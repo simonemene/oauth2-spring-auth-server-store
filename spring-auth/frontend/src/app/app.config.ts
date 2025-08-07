@@ -5,10 +5,11 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { httpInterceptor } from './interceptor/http.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideOAuthClient } from 'angular-oauth2-oidc';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes),provideHttpClient(
     withInterceptors([httpInterceptor])
 
-  ), provideAnimationsAsync()]
+  ), provideAnimationsAsync(),provideOAuthClient()]
 };
