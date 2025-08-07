@@ -105,7 +105,7 @@ import java.util.UUID;
 			RegisteredClient createClient = RegisteredClient.withId(UUID.randomUUID().toString())
 					.clientId("store-security")
 					.clientSecret("{noop}VxubZgAXyyTq9lGjj3qGvWNsHtE4SqTq")
-					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
+					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 					.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 					.scopes(scope-> scope.addAll(List.of(OidcScopes.OPENID,"ADMIN")))
 					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
@@ -119,6 +119,7 @@ import java.util.UUID;
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 					.scope(OidcScopes.OPENID).scope(OidcScopes.EMAIL)
 					.clientSettings(ClientSettings.builder().requireProofKey(true).build())
+					.redirectUri("https://oauth.pstmn.io/v1/callback")
 					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
 							.refreshTokenTimeToLive(Duration.ofMinutes(8)).reuseRefreshTokens(false).accessTokenFormat(
 									OAuth2TokenFormat.SELF_CONTAINED
