@@ -64,6 +64,7 @@ import java.util.UUID;
 					.authorizeHttpRequests((authorize) ->
 							authorize
 									.anyRequest().authenticated()
+
 					).cors(cors->cors.configurationSource(corsConfigurationSource()))
 					// Redirect to the login page when not authenticated from the
 					// authorization endpoint
