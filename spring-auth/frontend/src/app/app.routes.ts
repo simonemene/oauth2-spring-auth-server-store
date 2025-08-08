@@ -29,9 +29,6 @@ export const routes: Routes = [
         data: { roles: [ROLE.USER, ROLE.ADMIN,ROLE.TRACK] }
     },
     {
-        path: 'login', component: LoginComponent
-    },
-    {
         path: 'logout', component: LogoutComponent,
         canActivate: [authenticationGuard, roleGuard],
         data: { roles: [ROLE.USER, ROLE.ADMIN,ROLE.TRACK] }

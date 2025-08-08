@@ -21,10 +21,14 @@ export class HeaderComponent {
   {
     this.oauthService.configure(authConfig);
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    console.log(this.authenticated);
+    
   }
 
   login()
   {
+    console.log("avvio");
+    
     this.oauthService.initCodeFlow();
   }
 

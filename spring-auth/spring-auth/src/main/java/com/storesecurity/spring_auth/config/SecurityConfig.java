@@ -69,7 +69,7 @@ import java.util.UUID;
 					// authorization endpoint
 					.exceptionHandling((exceptions) -> exceptions
 							.defaultAuthenticationEntryPointFor(
-									new LoginUrlAuthenticationEntryPoint("/login"),
+									new LoginUrlAuthenticationEntryPoint("http://localhost:8081/login"),
 									new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
 							)
 					);
@@ -106,22 +106,13 @@ import java.util.UUID;
 
 		@Bean
 		public RegisteredClientRepository registeredClientRepository() {
-			RegisteredClient createClient = RegisteredClient.withId(UUID.randomUUID().toString())
-					.clientId("store-security")
-					.clientSecret("{noop}VxubZgAXyyTq9lGjj3qGvWNsHtE4SqTq")
-					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-					.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-					.scopes(scope-> scope.addAll(List.of(OidcScopes.OPENID,"ADMIN")))
-					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
-							.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED).build())
-					.build();
 
 			RegisteredClient pkceClient = RegisteredClient.withId(UUID.randomUUID().toString())
 					.clientId("store-security-pkce")
 					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-					.scope(OidcScopes.OPENID).scope(OidcScopes.EMAIL)
+					.scope(OidcScopes.OPENID).scope(OidcScopes.EMAIL).scope(OidcScopes.PROFILE)
 					.clientSettings(ClientSettings.builder().requireProofKey(true).build())
 					.redirectUri("http://localhost:4200/welcome")
 					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(10))
@@ -130,7 +121,7 @@ import java.util.UUID;
 							).build()).build();
 
 
-			return new InMemoryRegisteredClientRepository(createClient,pkceClient);
+			return new InMemoryRegisteredClientRepository(pkceClient);
 		}
 
 		@Bean

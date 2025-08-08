@@ -4,7 +4,7 @@ export const authConfig: AuthConfig =
 {
    issuer: 'http://localhost:8081',
    redirectUri: 'http://localhost:4200/welcome',
-   clientId: 'store-security',
+   clientId: 'store-security-pkce',
    responseType: 'code',
    scope:'openid profile email',
    requireHttps: false,
